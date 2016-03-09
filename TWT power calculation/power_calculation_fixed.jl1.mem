@@ -1,0 +1,50 @@
+        - module PowerCalculation
+        - 
+        - using DataFrames.readtable
+        - 
+        - export calpower
+        - 
+        - const epsilon0 = 8.854e-12
+        - const c = 299792458.0
+        - a = 2.032e-3
+        - b = a/2
+        - dx = 0.01e-3
+        - dz = dx
+        - dA = dx*dz
+        - nx = round(Int, 1.15*2/dx*1e-3) + 1
+        - nz = round(Int, 0.57*2/dz*1e-3) + 1
+        - ndata = 21
+        - 
+        - function sumpower(data::Matrix{Float64})
+        0     output = 0.0
+        0     for x in data
+107110080         output += c*epsilon0*dA*x^2
+        -     end
+        0     output
+        - end
+        - 
+        - function checker(data::Matrix{Real}, filtered::Matrix{Float64})
+        0     N = size(data, 1)
+        0     j = 1
+        0     for i in 1:N
+ 27149472         if abs(data[i, 1]) <= 1.15 && abs(data[i, 2]) <= 0.57
+162557136             filtered[j, :] = data[i, 4:6]
+        0             j += 1
+        -         end
+        -     end
+        0     nothing
+        - end
+        - 
+        - function calpower()
+    26160     powers = zeros(21)
+   637744     filteredtable = zeros(nx*nz, 3)
+        0     for i in 1:length(powers)
+        0         table = readtable("J:/TWT/power2/" * string(i) * ".txt", skipstart=3, header=false, separator=' ')
+        0         table = convert(Array, table)
+        0         checker(table, filteredtable)
+      336         powers[i] = sumpower(filteredtable)
+        -     end
+        0     powerAvg = mean(powers)
+        - end
+        - 
+        - end

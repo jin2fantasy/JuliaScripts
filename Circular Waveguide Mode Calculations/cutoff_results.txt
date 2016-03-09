@@ -1,0 +1,7 @@
+radius is 5.5 mm
+    cutoff for TE0,1 mode is 33.240712241210936 GHz
+    cutoff for TE0,2 mode is 60.86142817535928 GHz
+    cutoff for TE0,3 mode is 88.25659625305286 GHz
+    cutoff for TE0,4 mode is 115.58533277070326 GHz
+    cutoff for TE8,1 mode is 83.69305199528281 GHz
+    cutoff for TM8,1 mode is 106.05479053651565 GHz
