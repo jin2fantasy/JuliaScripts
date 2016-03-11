@@ -22,7 +22,7 @@ dn(n) = p - p/pi*acos((NN-2n+2)/NN)
 k(f) = 2pi*f/c
 kzmn(m, n) = m*pi / dn(n)
 betan(b0, n) = b0 + 2pi*n/p
-nu{T<:AbstractFloat}(f::T, b0::T, n) = sqrt(abs(k(f)^2 - betan(b0, n)^2 - kx^2))
+nu(f, b0, n) = sqrt(abs(k(f)^2 - betan(b0, n)^2 - kx^2))
 nu_index(f, b0, n) = (k(f)^2 - betan(b0, n)^2 - kx^2) < 0
 lmn(f, m, n) = sqrt(abs(k(f)^2 - kzmn(m ,n)^2 - kx^2))
 lmn_index(f, m, n) = (k(f)^2 - kzmn(m, n)^2 - kx^2) < 0
@@ -104,21 +104,23 @@ function Gpl2(e, x)
 end
 
 function Rp(b0, n, m)
-    if isapprox(abs(betan(b0, n)), abs(m*pi/p))
+    _betan = betan(b0, n)
+    if isapprox(abs(_betan), abs(m*pi/p))
         m == 0 && return convert(Complex, p)
         return convert(Complex, p/2)
     else
-        return (im * betan(b0, n) * (1 - exp(im * betan(b0, n) * p) * (-1)^m) /
-                (betan(b0, n)^2 - (m*pi/p)^2))
+        return (im * _betan * (1 - exp(im * _betan * p) * (-1)^m) /
+                (_betan^2 - (m*pi/p)^2))
     end
 end
 function Rm(b0, n, m)
-    if isapprox(abs(betan(b0, n)), abs(m*pi/p))
+    _betan = betan(b0, n)
+    if isapprox(abs(_betan), abs(m*pi/p))
         m == 0 && return convert(Complex, p)
         return convert(Complex, p/2)
     else
-        return (-im * betan(b0, n) * (1 - exp(-im * betan(b0, n) * p) * (-1)^m) /
-                (betan(b0, n)^2 - (m*pi/p)^2))
+        return (-im * _betan * (1 - exp(-im * _betan * p) * (-1)^m) /
+                (_betan^2 - (m*pi/p)^2))
     end
 end
 
@@ -173,9 +175,13 @@ function detMNPQ(freq, beta0)
     n = -3:3
     np = -3:3 # for clarity
     m = 0:4
-    M = Array{Complex}(length(n), length(n))
+    M = Array{Complex{Float64}}(length(n), length(n))
     N, P, Q = similar(M), similar(M), similar(M)
-    bmpam_dmpcm = map(evalbmpam_dmpcm, repmat([freq], length(m), 1), m)
+    bmpam_dmpcm = Array(Tuple{Float64, Float64}, length(m))
+    for i in 1:length(m)
+        bmpam_dmpcm[i] = evalbmpam_dmpcm(freq, m[i])
+    end
+
     for ii in 1:length(np), jj in 1:length(n)
         _nu = nu(freq, beta0, np[ii])
         _Fnu = Fnu(freq, beta0, n[jj])
@@ -184,10 +190,10 @@ function detMNPQ(freq, beta0)
         _Gpnu = Gpnu(freq, beta0, np[ii])
         expbeta = exp(im * (betan(beta0, np[ii]) - betan(beta0, n[jj])) * s)
 
-        M[jj,ii] = (ii == jj) ? p^2.0 * _nu * _Fpnu : 0
-        N[jj,ii] = (ii == jj) ? p^2.0 * _nu * _Gpnu : 0
-        P[jj,ii] = (ii == jj) ? p^2.0 * _nu * _Fpnu : 0
-        Q[jj,ii] = (ii == jj) ? -p^2.0 * _nu * _Gpnu : 0
+        M[jj,ii] = (ii == jj) ? p^2.0 * _nu * _Fpnu : .0
+        N[jj,ii] = (ii == jj) ? p^2.0 * _nu * _Gpnu : .0
+        P[jj,ii] = (ii == jj) ? p^2.0 * _nu * _Fpnu : .0
+        Q[jj,ii] = (ii == jj) ? -p^2.0 * _nu * _Gpnu : .0
         for kk in 1:length(m)
             _lmn = lmn(freq, m[kk], 1)
             _Fl = Fl(freq, m[kk], 1, .0)
