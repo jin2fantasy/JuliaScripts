@@ -182,7 +182,7 @@ function detMNPQ(freq, beta0)
         _Fpnu = Fpnu(freq, beta0, np[ii])
         _Gnu = Gnu(freq, beta0, n[jj])
         _Gpnu = Gpnu(freq, beta0, np[ii])
-        expbeta = exp(im * (betan(beta0, np[ii]) - betan(beta0, n[jj]) * s))
+        expbeta = exp(im * (betan(beta0, np[ii]) - betan(beta0, n[jj])) * s)
 
         M[jj,ii] = (ii == jj) ? p^2.0 * _nu * _Fpnu : 0
         N[jj,ii] = (ii == jj) ? p^2.0 * _nu * _Gpnu : 0
