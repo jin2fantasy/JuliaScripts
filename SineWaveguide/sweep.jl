@@ -17,12 +17,13 @@
 
 
 addprocs(8)
-using PyPlot
-@everywhere include("D:\\JuliaScripts\\SineWaveguide\\test.jl")
+using Plots
+@everywhere include("D:\\JuliaScripts\\SineWaveguide\\test2.jl")
 N=4001
-@everywhere detMNPQ2(x) = detMNPQ(x, 118/180*pi/p)
+@everywhere detMNPQ2(x) = detMNPQ(x, 180/180*pi/p)
 f = linspace(0, 300e9, N)
 # f = linspace(209.1e9, 209.6e9, N)
 val2 = pmap(detMNPQ2, f)
-plot(f, val2, ".")
-grid()
+plot!(f, val2)
+
+show()
