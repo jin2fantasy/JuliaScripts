@@ -1,16 +1,27 @@
 using Roots
 function mysolver(func::Function, lo, hi, N=100)
     guesses = linspace(lo, hi, N)
-    f_guess = map(func, guesses)
-    a = f_guess[1]
+    a = func(guesses[1])
+    absminvalue = abs(a)
+    absminvalueindex = 1
     for i in 2:N
-        b = f_guess[i]
-        if a * b < 0
+        b = func(guesses[i])
+        if abs(b) < absminvalue
+            absminvalue = abs(b)
+            absminvalueindex = i
+        end
+        ratio = b/a
+        if ratio < 0
             return fzero(func, [guesses[i-1], guesses[i]])
         else
             a = b
         end
     end
-    N > 1600 && error("No bracket found/Too many iterations")
+    N > 20000 && error("No bracket found/Too many iterations")
+    if N > 6000
+        maxindex = min(N, absminvalueindex + 500)
+        minindex = max(1, absminvalueindex - 500)
+        mysolver(func, guesses[minindex], guesses[maxindex], 2N)
+    end
     mysolver(func, lo, hi, 2N)
 end

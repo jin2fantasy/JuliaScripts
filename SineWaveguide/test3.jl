@@ -3,9 +3,9 @@ const c = 299792458.0
 const μ0 = 4e-7pi
 const ϵ0 = 1/(μ0*c^2)
 # geometry parameters
-const a = 0.77e-3
-const p = 0.46e-3
-const h = 0.43e-3
+const a = 0.53e-3
+const p = 0.44e-3
+const h = 0.30e-3
 const g = (0.15e-3)/2
 const s = p/2
 # # space harmonics number in region I
@@ -13,7 +13,7 @@ const s = p/2
 # # standing wave number n region II and III
 # const m = 0:4
 # number of steps in region II and III
-const NN = 1000
+const NN = 500
 # wave number in x
 const kx = pi/a
 #####################
@@ -129,8 +129,8 @@ function Rm(b0, n, m)
 end
 
 function evalbmpam_dmpcm(f, m)
-    bmpam = -Fpl(f, m, NN, g+h) / Gpl(f, m, NN, g+h)
-    dmpcm = Fpl(f, m, NN, g+h) / Gpl(f, m, NN, g+h)
+    bmpam = -Fpl(f, m, NN, h/NN) / Gpl(f, m, NN, h/NN)
+    dmpcm = Fpl(f, m, NN, h/NN) / Gpl(f, m, NN, h/NN)
     kf2 = k(f)^2
 
     @inbounds for kk in NN:-1:2
@@ -143,14 +143,14 @@ function evalbmpam_dmpcm(f, m)
         lmk1 = lmn(f, m, kk-1)
         e1 = kf2 - kzmn(m, kk)^2 - kx^2
         e2 = kf2 - kzmn(m, kk-1)^2 - kx^2
-        Flk = Fl2(e1, yn1)
-        Fplk = Fpl2(e1, yn1)
-        Glk = Gl2(e1, yn1)
-        Gplk = Gpl2(e1, yn1)
-        Flk1 = Fl2(e2, yn1)
-        Fplk1 = Fpl2(e2, yn1)
-        Glk1 = Gl2(e2, yn1)
-        Gplk1 = Gpl2(e2, yn1)
+        Flk = Fl2(e1, .0)
+        Fplk = Fpl2(e1, .0)
+        Glk = Gl2(e1, .0)
+        Gplk = Gpl2(e1, .0)
+        Flk1 = Fl2(e2, h/NN)
+        Fplk1 = Fpl2(e2, h/NN)
+        Glk1 = Gl2(e2, h/NN)
+        Gplk1 = Gpl2(e2, h/NN)
 
         if bmpam_index
             Ymn1n1a = - dn1 / dn0 / lmk
@@ -200,10 +200,10 @@ function detMNPQ(freq, beta0)
         Q[jj,ii] = (ii == jj) ? -p^2.0 * _nu * _Gpnu : .0
         for kk in 1:length(m)
             _lmn = lmn(freq, m[kk], 1)
-            _Fl = Fl(freq, m[kk], 1, g)
-            _Fpl = Fpl(freq, m[kk], 1, g)
-            _Gl = Gl(freq, m[kk], 1, g)
-            _Gpl = Gpl(freq, m[kk], 1, g)
+            _Fl = Fl(freq, m[kk], 1, .0)
+            _Fpl = Fpl(freq, m[kk], 1, .0)
+            _Gl = Gl(freq, m[kk], 1, .0)
+            _Gpl = Gpl(freq, m[kk], 1, .0)
             _Rp = Rp(beta0, np[ii], m[kk])
             _Rm = Rm(beta0, n[jj], m[kk])
 
