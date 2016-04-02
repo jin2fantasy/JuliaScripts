@@ -3,10 +3,11 @@ const c = 299792458.0
 const μ0 = 4e-7pi
 const ϵ0 = 1/(μ0*c^2)
 # geometry parameters
-const a = 0.53e-3
-const p = 0.44e-3
-const h = 0.30e-3
-const g = (0.15e-3)/2
+const a = 0.56e-3
+const b = 0.38e-3
+const p = 0.23e-3
+const h = 0.23e-3
+const g = (b-h)/2
 const s = p/2
 # # space harmonics number in region I
 # const n = -3:3
@@ -133,7 +134,7 @@ function evalbmpam_dmpcm(f, m)
     dmpcm = Fpl(f, m, NN, h/NN) / Gpl(f, m, NN, h/NN)
     kf2 = k(f)^2
 
-    @inbounds for kk in NN:-1:2
+    for kk in NN:-1:2
         bmpam_index = (bmpam == -1)
         dmpcm_index = (dmpcm == 1)
         yn1 = yn(kk-1)
